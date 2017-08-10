@@ -1,7 +1,6 @@
 from __future__ import division
 
 from cStringIO import StringIO
-from subprocess import call
 from urllib import urlencode, quote as urlquote
 from urllib2 import urlopen
 from urlparse import urlparse
@@ -13,6 +12,7 @@ import hashlib
 import logging
 import math
 import os
+import posixpath
 import re
 import struct
 import sys
@@ -134,7 +134,7 @@ class Images(object):
         # indicator that unsanitized data may be getting through.
         # Mutating the scheme syntax to match is a little gross, but it works
         # for today.
-        norm_path = os.path.normpath(local_path)
+        norm_path = posixpath.normpath(local_path)
         if local_path.replace('://', ':/') != norm_path or norm_path.startswith('../'):
             raise ValueError('path is not normalized')
 
@@ -318,7 +318,7 @@ class Images(object):
                     fh = open(tmp_path, 'wb')
                     fh.write(remote_file)
                     fh.close()
-                call(['mv', tmp_path, path])
+                os.rename(tmp_path, path)
         else:
             path = self.find_img(path)
             if not path:
